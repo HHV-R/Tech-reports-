@@ -2,135 +2,148 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>System Hack</title>
+<title>EXAR SYSTEM</title>
 
 <style>
 body{
     margin:0;
     background:black;
-    font-family:Tahoma;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+    color:#00ffe0;
+    font-family:monospace;
     overflow:hidden;
 }
 
-.container{
-    width:330px;
-    padding:20px;
-    border-radius:20px;
-    background:#0d0d0d;
-    box-shadow:0 0 25px #00ffe0;
-    position:relative;
+/* شاشة البداية */
+#login{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
 }
 
-/* glitch effect */
+input{
+    padding:10px;
+    margin:10px;
+    background:#111;
+    border:1px solid #00ffe0;
+    color:white;
+}
+
+/* النظام */
+#system{
+    display:none;
+    padding:20px;
+}
+
+/* glitch */
 .glitch{
-    color:#ff0055;
-    font-size:22px;
-    text-align:center;
-    animation: glitch 1s infinite;
+    animation:glitch 1s infinite;
 }
 
 @keyframes glitch{
-    0%{text-shadow:2px 2px #00ffe0;}
-    50%{text-shadow:-2px -2px #ff00ff;}
-    100%{text-shadow:2px -2px #00ffe0;}
+    0%{text-shadow:2px 2px red;}
+    50%{text-shadow:-2px -2px blue;}
+    100%{text-shadow:2px -2px red;}
 }
 
-.label{
-    color:#00ffe0;
-    margin:10px 0 5px;
-}
-
-.input{
-    background:#111;
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:10px;
-}
-
-.button{
-    margin-top:15px;
-    padding:12px;
-    text-align:center;
-    border-radius:10px;
-    background:linear-gradient(90deg,#00ffe0,#ff0055);
+/* أزرار */
+button{
+    padding:10px;
+    margin:10px;
+    background:#00ffe0;
+    border:none;
     cursor:pointer;
 }
 
-/* shake */
-.shake{
-    animation: shake 0.2s infinite;
+.box{
+    background:#111;
+    padding:15px;
+    margin:10px 0;
 }
 
+/* اهتزاز */
+.shake{
+    animation:shake 0.2s infinite;
+}
 @keyframes shake{
     0%{transform:translate(2px,2px);}
     50%{transform:translate(-2px,-2px);}
-    100%{transform:translate(2px,-2px);}
 }
-
 </style>
 
 </head>
 
 <body>
 
-<div class="container" id="box">
+<!-- تسجيل دخول -->
+<div id="login">
+    <h1 class="glitch">EXAR SYSTEM</h1>
+    <input id="user" placeholder="username">
+    <input id="pass" placeholder="password" type="password">
+    <button onclick="enter()">دخول</button>
+</div>
 
-    <div class="glitch">النظام المتقدم</div>
+<!-- النظام -->
+<div id="system">
+    <h2 class="glitch">لوحة التحكم</h2>
 
-    <div class="label">اسم المستهدف</div>
-    <div class="input" id="user"></div>
+    <div class="box">
+        اسم الهدف: <span id="target">@user</span>
+    </div>
 
-    <div class="label">عدد البلاغات</div>
-    <div class="input" id="count">0</div>
+    <div class="box">
+        عدد البلاغات: <span id="count">0</span>
+    </div>
 
-    <div class="label">نوع البلاغ</div>
-    <div class="input">انتهاك الخصوصية 🛡️</div>
+    <div class="box">
+        نوع البلاغ:
+        <select id="type">
+            <option>انتحال شخصية</option>
+            <option>انتهاك الخصوصية</option>
+            <option>محتوى مخالف</option>
+        </select>
+    </div>
 
-    <div class="label">تم بواسطة</div>
-    <div class="input">Ali Hazim</div>
-
-    <div class="button" onclick="start()">بدء التنفيذ ⚡</div>
-
+    <button onclick="start()">بدء التنفيذ ⚡</button>
+    <button onclick="changeUser()">تغيير الهدف</button>
 </div>
 
 <audio id="sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
 
-// كتابة تلقائية
-let username = "@user7377318496173";
-let i = 0;
-let typing = setInterval(()=>{
-    document.getElementById("user").innerText += username[i];
-    i++;
-    if(i >= username.length){
-        clearInterval(typing);
-    }
-},100);
+function enter(){
+    document.getElementById("login").style.display="none";
+    document.getElementById("system").style.display="block";
+}
 
+/* تغيير اسم */
+function changeUser(){
+    let name = prompt("ادخل اليوزر:");
+    document.getElementById("target").innerText = name;
+}
+
+/* تنفيذ */
 function start(){
-    let num = 0;
-    let box = document.getElementById("box");
+    let count = 0;
+    let box = document.body;
     let sound = document.getElementById("sound");
 
     let interval = setInterval(()=>{
-        num += Math.floor(Math.random()*40);
-        document.getElementById("count").innerText = num;
+        count += Math.floor(Math.random()*30);
+        document.getElementById("count").innerText = count;
 
-        // صوت
         sound.play();
-
-        // اهتزاز
         box.classList.add("shake");
-        setTimeout(()=> box.classList.remove("shake"),100);
 
-        if(num >= 900){
+        setTimeout(()=>box.classList.remove("shake"),100);
+
+        if(count >= 1000){
             clearInterval(interval);
+            alert("تم التنفيذ بنجاح ✅");
         }
     },150);
 }
