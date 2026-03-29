@@ -2,66 +2,60 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>EXAR SYSTEM</title>
+<title>EXAR ULTRA</title>
 
 <style>
 body{
     margin:0;
     background:black;
-    color:#00ffe0;
+    color:#00ff9f;
     font-family:monospace;
     overflow:hidden;
 }
 
-/* شاشة البداية */
-#login{
-    position:absolute;
-    width:100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-}
-
-input{
-    padding:10px;
-    margin:10px;
-    background:#111;
-    border:1px solid #00ffe0;
-    color:white;
-}
-
-/* النظام */
+/* شاشة */
 #system{
+    padding:15px;
+}
+
+/* كاميرا */
+video{
+    width:100%;
+    max-height:150px;
+    border:1px solid #00ff9f;
+    margin-bottom:10px;
+}
+
+/* Terminal */
+#terminal{
+    background:#050505;
+    height:150px;
+    overflow:auto;
+    padding:10px;
+    border:1px solid #00ff9f;
+}
+
+/* إنذار */
+#alert{
     display:none;
-    padding:20px;
+    background:red;
+    color:white;
+    text-align:center;
+    padding:10px;
+    animation:flash 0.5s infinite;
+}
+@keyframes flash{
+    0%{opacity:1;}
+    50%{opacity:0.2;}
 }
 
 /* glitch */
 .glitch{
     animation:glitch 1s infinite;
 }
-
 @keyframes glitch{
     0%{text-shadow:2px 2px red;}
     50%{text-shadow:-2px -2px blue;}
-    100%{text-shadow:2px -2px red;}
-}
-
-/* أزرار */
-button{
-    padding:10px;
-    margin:10px;
-    background:#00ffe0;
-    border:none;
-    cursor:pointer;
-}
-
-.box{
-    background:#111;
-    padding:15px;
-    margin:10px 0;
 }
 
 /* اهتزاز */
@@ -72,80 +66,115 @@ button{
     0%{transform:translate(2px,2px);}
     50%{transform:translate(-2px,-2px);}
 }
+
+.box{
+    background:#111;
+    padding:8px;
+    margin:5px 0;
+}
 </style>
 
 </head>
 
 <body>
 
-<!-- تسجيل دخول -->
-<div id="login">
-    <h1 class="glitch">EXAR SYSTEM</h1>
-    <input id="user" placeholder="username">
-    <input id="pass" placeholder="password" type="password">
-    <button onclick="enter()">دخول</button>
-</div>
-
-<!-- النظام -->
 <div id="system">
-    <h2 class="glitch">لوحة التحكم</h2>
 
-    <div class="box">
-        اسم الهدف: <span id="target">@user</span>
-    </div>
+<h2 class="glitch">EXAR ULTRA SYSTEM</h2>
 
-    <div class="box">
-        عدد البلاغات: <span id="count">0</span>
-    </div>
+<div id="alert">⚠ SYSTEM TAKEOVER ⚠</div>
 
-    <div class="box">
-        نوع البلاغ:
-        <select id="type">
-            <option>انتحال شخصية</option>
-            <option>انتهاك الخصوصية</option>
-            <option>محتوى مخالف</option>
-        </select>
-    </div>
+<video id="cam" autoplay></video>
 
-    <button onclick="start()">بدء التنفيذ ⚡</button>
-    <button onclick="changeUser()">تغيير الهدف</button>
+<div id="terminal"></div>
+
+<div class="box">IP: <span id="ip">...</span></div>
+<div class="box">Location: <span id="loc">...</span></div>
+<div class="box">User: <span id="user">Unknown</span></div>
+<div class="box">Countdown: <span id="time">--</span></div>
+
+<button onclick="start()">START ⚡</button>
+
 </div>
 
 <audio id="sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
 
-function enter(){
-    document.getElementById("login").style.display="none";
-    document.getElementById("system").style.display="block";
+function log(text){
+    let t = document.getElementById("terminal");
+    let line = document.createElement("div");
+    let i=0;
+
+    let typing = setInterval(()=>{
+        line.innerText += text[i];
+        i++;
+        if(i>=text.length){
+            clearInterval(typing);
+            t.appendChild(line);
+            t.scrollTop = t.scrollHeight;
+        }
+    },20);
 }
 
-/* تغيير اسم */
-function changeUser(){
-    let name = prompt("ادخل اليوزر:");
-    document.getElementById("target").innerText = name;
+/* IP وهمي */
+function fakeIP(){
+    return Math.floor(Math.random()*255)+"."+
+           Math.floor(Math.random()*255)+"."+
+           Math.floor(Math.random()*255)+"."+
+           Math.floor(Math.random()*255);
 }
 
-/* تنفيذ */
+/* تشغيل الكاميرا */
+function startCam(){
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+document.getElementById("cam").srcObject = stream;
+})
+.catch(()=>{
+log("Camera blocked ❌");
+});
+}
+
+/* بدء */
 function start(){
-    let count = 0;
-    let box = document.body;
+
     let sound = document.getElementById("sound");
 
-    let interval = setInterval(()=>{
-        count += Math.floor(Math.random()*30);
-        document.getElementById("count").innerText = count;
+    startCam();
+
+    document.getElementById("ip").innerText = fakeIP();
+    document.getElementById("loc").innerText = "Baghdad";
+    document.getElementById("user").innerText = "Detected";
+
+    log("Initializing...");
+    log("Accessing device...");
+    log("Bypassing security...");
+
+    let time = 10;
+
+    let countdown = setInterval(()=>{
+        document.getElementById("time").innerText = time;
+        time--;
 
         sound.play();
-        box.classList.add("shake");
+        document.body.classList.add("shake");
 
-        setTimeout(()=>box.classList.remove("shake"),100);
+        setTimeout(()=>document.body.classList.remove("shake"),100);
 
-        if(count >= 1000){
-            clearInterval(interval);
-            alert("تم التنفيذ بنجاح ✅");
+        if(time <= 0){
+            clearInterval(countdown);
+
+            document.getElementById("alert").style.display="block";
+            log("!!! FULL CONTROL ACHIEVED !!!");
+
+            setTimeout(()=>{
+                document.body.style.background="red";
+                alert("SYSTEM OVERRIDDEN 💀");
+            },1500);
         }
-    },150);
+
+    },1000);
 }
 
 </script>
